@@ -1,0 +1,169 @@
+mysql> use zepto_db;
+Database changed
+mysql> -- 1. Find all products with MRP greater than ₹100000
+mysql> SELECT name, mrp
+    -> FROM zepto
+    -> WHERE mrp > 100000;
+mysql> CREATE TABLE category_info (
+    ->     category VARCHAR(120),
+    ->     type VARCHAR(50)
+    -> );
+ERROR 1050 (42S01): Table 'category_info' already exists
+mysql>
+mysql> INSERT INTO category_info VALUES
+    -> ('Snacks','Food'),
+    -> ('Beverages','Drink'),
+    -> ('Fruits','Food'),
+    -> ('Personal Care','Non-Food');
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
++---------------------------------------------------+--------+
+| name                                              | mrp    |
++---------------------------------------------------+--------+
+| Fortune Soyabean Oil                              | 100500 |
+| Dhara Health Refined Sun Flower Oil Jar           | 120000 |
+| Dhara Kachi Ghani Mustard Oil Jar                 | 125000 |
+| Saffola Gold (Jar)                                | 124000 |
+| Fortune Rice Bran Health Oil (Jar)                | 105000 |
+| Dhara Filtered Groundnut Oil (Jar)                | 105000 |
+| Praakritik Natural Desi Gir Cow A2 Ghee           | 145000 |
+| Dhara Filtered Groundnut Oil (Jar)                | 105000 |
+| Borges Extra Light Olive Oil Bottle               | 260000 |
+| Fortune Soyabean Oil                              | 100500 |
+| Dhara Health Refined Sun Flower Oil Jar           | 120000 |
+| Dhara Kachi Ghani Mustard Oil Jar                 | 125000 |
+| Saffola Gold (Jar)                                | 124000 |
+| Fortune Rice Bran Health Oil (Jar)                | 105000 |
+| Dhara Filtered Groundnut Oil (Jar)                | 105000 |
+| Praakritik Natural Desi Gir Cow A2 Ghee           | 145000 |
+| Dhara Filtered Groundnut Oil (Jar)                | 105000 |
+| Borges Extra Light Olive Oil Bottle               | 260000 |
+| Pampers Premium Care Pants - Large                | 109900 |
+| Pampers Premium Care Pants - Medium               | 109900 |
+| Pampers Pants - Large                             | 154900 |
+| Pampers Active Baby Diapers New Born Extra Small  | 109900 |
+| Pampers Premium Care Pants - Large                | 109900 |
+| Pampers Premium Care Pants - Medium               | 109900 |
+| Pampers Pants - Large                             | 154900 |
+| Pampers Active Baby Diapers New Born Extra Small  | 109900 |
++---------------------------------------------------+--------+
+26 rows in set, 4 warnings (0.00 sec)
+
+mysql> -- 2. Get all out-of-stock products
+mysql> SELECT name, category
+    -> FROM zepto
+    -> WHERE outOfStock = TRUE;
+Empty set, 3728 warnings (0.00 sec)
+
+mysql> -- 3. Find products with discount more than 60%
+mysql> SELECT name, discountPercent
+    -> FROM zepto
+    -> WHERE discountPercent > 60;
++--------------------+-----------------+
+| name               | discountPercent |
++--------------------+-----------------+
+| "Maggi Magic Cubes | 3500            |
+| "Maggi Magic Cubes | 3500            |
+| "Maggi Magic Cubes | 3500            |
+| "Maggi Magic Cubes | 3500            |
++--------------------+-----------------+
+4 rows in set (0.00 sec)
+
+mysql> -- 4. Find products weighing more than 5kg
+mysql> SELECT name, weightInGms
+    -> FROM zepto
+    -> WHERE weightInGms > 5000;
++-----------------------------+-------------+
+| name                        | weightInGms |
++-----------------------------+-------------+
+| Aashirvaad Atta             | 10000       |
+| Pillsbury Chakki Fresh Atta | 10000       |
+| Aashirvaad Atta             | 10000       |
+| Pillsbury Chakki Fresh Atta | 10000       |
++-----------------------------+-------------+
+4 rows in set (0.00 sec)
+
+mysql> -- 5. Count total number of products
+mysql> SELECT COUNT(*) AS total_products
+    -> FROM zepto;
++----------------+
+| total_products |
++----------------+
+|           3732 |
++----------------+
+1 row in set (0.00 sec)
+
+mysql> -- 6. Find average MRP of all products
+mysql> SELECT ROUND(AVG(mrp),2) AS avg_price
+    -> FROM zepto;
++-----------+
+| avg_price |
++-----------+
+|  15676.37 |
++-----------+
+1 row in set, 4 warnings (0.00 sec)
+
+mysql> -- 7. Total available quantity per category
+mysql> SELECT category, SUM(availableQuantity) AS total_stock
+    -> FROM zepto
+    -> GROUP BY category;
++----------+-------------+
+| category | total_stock |
++----------+-------------+
+| NULL     |       14954 |
++----------+-------------+
+1 row in set (0.00 sec)
+
+mysql> -- 8. Find maximum and minimum price
+mysql> SELECT MAX(mrp) AS max_price,MIN(mrp) AS min_price
+    -> FROM zepto;
++-----------+---------------------------------------------+
+| max_price | min_price                                   |
++-----------+---------------------------------------------+
+| 9900      |  Vegetarian Masala (Free 2 Cubes Inside)""" |
++-----------+---------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql> -- 9. Join products with category type
+mysql> SELECT z.name, z.category, c.type
+    -> FROM zepto z
+    -> JOIN category_info c
+    -> ON z.category = c.category;
+Empty set (0.00 sec)
+
+mysql> -- 10.count of products whose MRP is greater than the average MRP
+mysql> SELECT COUNT(*) AS product_count
+    -> FROM zepto
+    -> WHERE mrp > (SELECT AVG(mrp) FROM zepto);
++---------------+
+| product_count |
++---------------+
+|          1357 |
++---------------+
+1 row in set, 8 warnings (0.00 sec)
+
+mysql> -- 11. Find category with highest total revenue
+mysql> SELECT category, SUM(discountedSellingPrice * availableQuantity) AS revenue
+    -> FROM zepto
+    -> GROUP BY category
+    -> ORDER BY revenue DESC
+    -> LIMIT 1;
++----------+-----------+
+| category | revenue   |
++----------+-----------+
+| NULL     | 224260488 |
++----------+-----------+
+1 row in set (0.00 sec)
+
+mysql> -- 12. Find products with highest discount in each category
+mysql> SELECT name, category, discountPercent
+    -> FROM zepto z1
+    -> WHERE discountPercent = (
+    ->     SELECT MAX(discountPercent)
+    ->     FROM zepto z2
+    ->     WHERE z1.category = z2.category
+    -> );
+Empty set (7.15 sec)
+
+mysql>
