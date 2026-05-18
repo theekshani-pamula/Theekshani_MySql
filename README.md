@@ -34,7 +34,7 @@ Key Insights
 Conclusion
 This project demonstrates how raw data can be transformed into meaningful insights using SQL. It highlights skills in data cleaning, analysis, and understanding business patterns like pricing, discounts, and inventory.
 
-========================================================================================================================================================================
+----------------------------------------------------------------------------------------------------------------------------------------------------
 Bookstore Database Management System:-
 
 The Bookstore Database Management System is a relational database project built using MySQL to efficiently manage bookstore operations such as books, customers, and orders. It demonstrates core database concepts including normalization, relationships, and structured query design.
